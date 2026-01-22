@@ -36,31 +36,34 @@
       <h1 class="title">Make an offer to support this borrower.</h1>
       <p class="subtitle">You can choose how much you want to lend and set your preferred repayment terms.</p>
 
-      <form id="offerForm">
+      <form id="offerForm" action="offer-form.php" method="POST">
+
+        <input type="hidden" name="loan_id" id="loan_id_input">
 
         <!-- 1. Offer Amount -->
         <div class="section amount-section">
           <label class="section-num">1.</label>
           <label class="section-label">Offer Amount</label>
           <p class="hint">Amount you want to lend</p>
-          <input type="number" class="input-amount" placeholder="e.g. 5000" required>
+          <input type="number" name="amount" class="input-amount" placeholder="e.g. 5000" required step="0.01">
         </div>
 
         <!-- 2. Expected Return / Interest -->
         <div class="section interest-section">
           <label class="section-num">2.</label>
-          <label class="section-label">Expected Return / Interest</label>
+          <label class="section-label">Expected Return / Interest (%)</label>
           <div class="interest-wrapper">
-            <select class="select-interest">
-              <option>Interest rate</option>
-              <option>5%</option>
-              <option>8%</option>
-              <option>10%</option>
-              <option>12%</option>
+            <select name="interest_rate_select" class="select-interest" id="interestSelect">
+              <option value="" selected>Select Interest rate</option>
+              <option value="5">5%</option>
+              <option value="8">8%</option>
+              <option value="10">10%</option>
+              <option value="12">12%</option>
+              <option value="custom">Custom</option>
             </select>
-            <div class="custom-group">
-              <span class="custom-text">Custom</span>
-              <input type="text" class="input-custom">
+            <div class="custom-group" id="customInterestGroup" style="display:none;">
+              <span class="custom-text">Custom %</span>
+              <input type="number" name="custom_interest_rate" class="input-custom" step="0.01" placeholder="e.g. 7.5">
             </div>
           </div>
         </div>
@@ -69,8 +72,7 @@
         <div class="section repayment-section">
           <label class="section-num">3.</label>
           <label class="section-label">Repayment Plan</label>
-          <p class="hint locked-hint">The repayment plan is set by the borrower. This field is locked and cannot be
-            edited.</p>
+          <p class="hint locked-hint">The repayment plan is set by the borrower. This field is locked.</p>
           <div class="pill">Installments</div>
         </div>
 
@@ -79,7 +81,8 @@
           <label class="section-num">4.</label>
           <label class="section-label">Message to Borrower (optional)</label>
           <p class="hint">Write a short message to the borrower</p>
-          <textarea class="textarea-message">I'm offering this amount to support you. Best wishes.</textarea>
+          <textarea name="terms"
+            class="textarea-message">I'm offering this amount to support you. Best wishes.</textarea>
         </div>
 
         <!-- Agreement -->
@@ -93,7 +96,7 @@
           </p>
         </div>
 
-        <button type="submit" class="btn-send">Send</button>
+        <button type="submit" name="submit_offer" class="btn-send">Send Offer</button>
       </form>
 
     </div>
@@ -108,6 +111,33 @@
 
 
   <script src="javascript/header-footer.js"></script>
+
+  <script>
+    // populate loan_id from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const loanId = urlParams.get('loan_id');
+    if (loanId) {
+      document.getElementById('loan_id_input').value = loanId;
+    } else {
+      // Redirect if no loan_id provided
+      alert('No loan selected. Redirecting to loan page...');
+      window.location = 'loan.html';
+    }
+
+    // Handle interest toggle
+    const interestSelect = document.getElementById('interestSelect');
+    const customInterestGroup = document.getElementById('customInterestGroup');
+
+    interestSelect.addEventListener('change', function () {
+      if (this.value === 'custom') {
+        customInterestGroup.style.display = 'flex';
+        document.querySelector('.input-custom').required = true;
+      } else {
+        customInterestGroup.style.display = 'none';
+        document.querySelector('.input-custom').required = false;
+      }
+    });
+  </script>
 </body>
 
 </html>

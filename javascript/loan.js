@@ -1,8 +1,14 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Check for success message from loan request submission
     if (localStorage.getItem('loanRequestSuccess') === 'true') {
-        showSuccessMessage();
+        showSuccessMessage('Your loan request has been submitted successfully! Admin will review it soon.');
         localStorage.removeItem('loanRequestSuccess');
+    }
+
+    // Check for success message from offer submission
+    if (localStorage.getItem('offerSuccess') === 'true') {
+        showSuccessMessage('Your offer has been sent successfully! The borrower will review it.');
+        localStorage.removeItem('offerSuccess');
     }
 
     loadLoans();
@@ -10,12 +16,12 @@ document.addEventListener('DOMContentLoaded', function () {
     setupSearch();
 });
 
-function showSuccessMessage() {
+function showSuccessMessage(text) {
     const message = document.createElement('div');
     message.className = 'success-notification';
     message.innerHTML = `
         <i class="fas fa-check-circle"></i>
-        <span>Your loan request has been submitted successfully! Admin will review it soon.</span>
+        <span>${text}</span>
         <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; margin-left: 10px;">&times;</button>
     `;
     document.body.appendChild(message);
@@ -104,6 +110,19 @@ function createLoanCard(loan) {
 
     const documents = loan.documents || 'No documents';
 
+    // Check if current user is the borrower
+    const currentUserId = localStorage.getItem('userId');
+    const isOwnLoan = currentUserId && (parseInt(loan.borrower_id) === parseInt(currentUserId));
+    const hasOffered = loan.user_has_offered == 1;
+
+    console.log('Checking loan ownership:', {
+        loanId: loan.loan_id,
+        borrowerId: loan.borrower_id,
+        currentUserId: currentUserId,
+        isOwnLoan: isOwnLoan,
+        hasOffered: hasOffered
+    });
+
     return `
         <article class="loan-card">
             <div class="card-header">
@@ -122,7 +141,12 @@ function createLoanCard(loan) {
             <div class="card-footer">
                 <div class="actions">
                     <a href="rate-borrower.html?loan_id=${loan.loan_id}" class="btn-rating">Submit Rating</a>
-                    <a href="offer-form.html?loan_id=${loan.loan_id}" class="btn-offer">Make Offer</a>
+                    ${isOwnLoan
+            ? `<button class="btn-offer btn-disabled" onclick="event.preventDefault(); alert('You cannot make an offer on your own loan request.'); return false;">Make Offer</button>`
+            : hasOffered
+                ? `<button class="btn-offer btn-disabled" onclick="event.preventDefault(); alert('You have already made an offer on this loan.'); return false;">Make Offer</button>`
+                : `<a href="offer-form.html?loan_id=${loan.loan_id}" class="btn-offer">Make Offer</a>`
+        }
                 </div>
                 <div class="stats">Accepted: ${loan.accepted_count || 0} &nbsp;&nbsp; Response: ${loan.response_count || 0}</div>
             </div>

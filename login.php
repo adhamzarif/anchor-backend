@@ -44,6 +44,7 @@ if (isset($_POST['login_btn'])) {
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('userName', '" . addslashes($user['full_name']) . "');
                 localStorage.setItem('userRole', '" . $user['role'] . "');
+                localStorage.setItem('userId', '" . $user['user_id'] . "');
                 window.location.href = '$redirect_url';
             </script>";
             exit();

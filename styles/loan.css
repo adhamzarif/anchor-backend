@@ -359,6 +359,14 @@ main {
   text-decoration: none;
 }
 
+.btn-disabled {
+  background: #f5b80077 !important;
+  color: rgba(0, 0, 0, 0.437) !important;
+  cursor: not-allowed !important;
+  opacity: 0.5;
+  pointer-events: auto;
+}
+
 .btn-rating:visited {
   background: rgba(220, 70, 80, 0.4);
   color: white;

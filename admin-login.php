@@ -40,6 +40,7 @@ if (isset($_POST['admin_login_btn'])) {
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('userName', '" . addslashes($user['full_name']) . "');
                 localStorage.setItem('userRole', 'admin');
+                localStorage.setItem('userId', '" . $user['user_id'] . "');
                 window.location.href = 'admin-dashboard.html';
             </script>";
             exit();
