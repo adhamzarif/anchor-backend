@@ -119,11 +119,25 @@ function createFundraiserCard(post) {
                     <button class="btn btn-decline" data-id="${post.post_id}" data-action="reject">
                         Decline
                     </button>
+                ` : post.status === 'approved' ? `
+                    <button class="btn btn-decline" data-id="${post.post_id}" data-action="reject" title="Decline this approved fundraiser">
+                        Decline
+                    </button>
+                    <span class="status-badge status-${post.status}">
+                        ${post.status.toUpperCase()}
+                    </span>
                 ` : `
+                    <button class="btn btn-approve" data-id="${post.post_id}" data-action="approve" title="Approve this rejected fundraiser">
+                        Approve
+                    </button>
                     <span class="status-badge status-${post.status}">
                         ${post.status.toUpperCase()}
                     </span>
                 `}
+                
+                <button class="btn btn-delete" data-id="${post.post_id}" title="Delete this fundraiser">
+                    Delete
+                </button>
             </div>
         </div>
     `;
@@ -141,6 +155,14 @@ function attachEventListeners() {
         btn.addEventListener('click', function () {
             const postId = this.getAttribute('data-id');
             handleApproval(postId, 'reject');
+        });
+    });
+
+    // Delete buttons
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const postId = this.getAttribute('data-id');
+            handleDelete(postId);
         });
     });
 }
@@ -183,6 +205,34 @@ async function handleApproval(postId, action) {
         console.error('Error during approval:', error);
         showNotification('An error occurred: ' + error.message, 'error');
         buttons.forEach(btn => btn.disabled = false);
+    }
+}
+
+async function handleDelete(postId) {
+    if (!confirm('Are you sure you want to delete this fundraiser? This action cannot be undone.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('api/api-admin-funding.php', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `post_id=${postId}`
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showNotification('Fundraiser deleted successfully!', 'success');
+            loadFundraisers(); // Reload the list
+        } else {
+            showNotification('Error: ' + (data.error || 'Unknown error occurred'), 'error');
+        }
+    } catch (error) {
+        console.error('Error during deletion:', error);
+        showNotification('An error occurred: ' + error.message, 'error');
     }
 }
 
