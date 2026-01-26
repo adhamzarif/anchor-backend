@@ -1,19 +1,19 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Check for success message from loan request submission
     if (localStorage.getItem('loanRequestSuccess') === 'true') {
-        showSuccessMessage('Your loan request has been submitted successfully! Admin will review it soon.');
+        showToast('Loan Request Submitted!', 'Your loan request has been submitted successfully! Admin will review it soon.', 'success');
         localStorage.removeItem('loanRequestSuccess');
     }
 
     // Check for success message from offer submission
     if (localStorage.getItem('offerSuccess') === 'true') {
-        showSuccessMessage('Your offer has been sent successfully! The borrower will review it.');
+        showToast('Offer Sent!', 'Your offer has been sent successfully! The borrower will review it.', 'success');
         localStorage.removeItem('offerSuccess');
     }
 
     // Check for success message from rating submission
     if (localStorage.getItem('ratingSuccess') === 'true') {
-        showSuccessMessage('Your rating has been submitted successfully!');
+        showToast('Rating Submitted!', 'Your rating has been submitted successfully!', 'success');
         localStorage.removeItem('ratingSuccess');
     }
 
@@ -24,21 +24,31 @@ document.addEventListener('DOMContentLoaded', function () {
     setupUserNameClick();
 });
 
-function showSuccessMessage(text) {
-    const message = document.createElement('div');
-    message.className = 'success-notification';
-    message.innerHTML = `
-        <i class="fas fa-check-circle"></i>
-        <span>${text}</span>
-        <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; margin-left: 10px;">&times;</button>
-    `;
-    document.body.appendChild(message);
+// Toast notification function
+function showToast(title, message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `success-toast ${type === 'error' ? 'error-toast' : ''}`;
 
-    // Auto remove after 5 seconds
+    const icon = type === 'success'
+        ? '<i class="fas fa-check-circle toast-icon"></i>'
+        : '<i class="fas fa-exclamation-circle toast-icon"></i>';
+
+    toast.innerHTML = `
+        ${icon}
+        <div class="toast-content">
+            <h4>${title}</h4>
+            <p>${message}</p>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+
+    document.body.appendChild(toast);
+
     setTimeout(() => {
-        if (message.parentElement) {
-            message.remove();
-        }
+        toast.style.animation = 'slideOut 0.4s ease';
+        setTimeout(() => toast.remove(), 400);
     }, 5000);
 }
 
@@ -154,10 +164,15 @@ function createLoanCard(loan) {
         ratingDisplay = `<span class="user-rating">(${avgRating}★)</span>`;
     }
 
+    // Add verified badge
+    const verifiedBadge = loan.verification_status === 'verified'
+        ? ' <i class="fas fa-check-circle verified-badge" title="Verified User"></i>'
+        : '';
+
     return `
         <article class="loan-card" id="loan-${loan.loan_id}" data-date="${loan.created_at}" data-amount="${loan.amount}">
             <div class="card-header">
-                <h3>User Name: <span class="user-name" data-user-id="${loan.borrower_id}">${loan.full_name || 'Anonymous'}</span> ${ratingDisplay}</h3>
+                <h3>User Name: <span class="user-name" data-user-id="${loan.borrower_id}">${loan.full_name || 'Anonymous'}${verifiedBadge}</span> ${ratingDisplay}</h3>
             </div>
 
             <div class="loan-info">
