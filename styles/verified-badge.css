@@ -1,0 +1,84 @@
+/* Verified Badge Styles */
+.verified-badge {
+    color: #1DA1F2;
+    font-size: 0.85em;
+    margin-left: 5px;
+    filter: drop-shadow(0 0 6px rgba(29, 161, 242, 0.4));
+    vertical-align: middle;
+}
+
+.verified-badge-green {
+    color: #00D95F;
+    font-size: 0.85em;
+    margin-left: 5px;
+    filter: drop-shadow(0 0 6px rgba(0, 217, 95, 0.4));
+    vertical-align: middle;
+}
+
+/* Success notification for admin */
+.success-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #00D95F, #00B84C);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Image Modal */
+.image-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    cursor: pointer;
+}
+
+.image-modal .modal-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.image-modal img {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.image-modal .close-modal {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.image-modal .close-modal:hover {
+    color: #ff4444;
+}
