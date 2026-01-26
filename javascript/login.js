@@ -23,9 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
             await new Promise(r => setTimeout(r, 1500));
 
             if (email === "test@anchor.com" && password === "password123") {
-                // Success logic
+                // Success logic (set frontend login flags for compatibility)
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('loggedIn', 'true');
+                localStorage.setItem('userName', 'Demo User');
+                // Redirect to dashboard
                 alert("Login Successful!");
-                window.location.href = "dashboard.html"; // Redirect to dashboard
+                window.location.href = "dashboard.html";
             } else {
                 throw new Error("Invalid email or password.");
             }

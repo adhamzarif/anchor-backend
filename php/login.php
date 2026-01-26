@@ -41,7 +41,9 @@ if (isset($_POST['login_btn'])) {
             $redirect_url = '../index.html';
 
             echo "<script>
+                // Mark user as logged in (compatibility: set both keys)
                 localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('loggedIn', 'true');
                 localStorage.setItem('userName', '" . addslashes($user['full_name']) . "');
                 localStorage.setItem('userRole', '" . $user['role'] . "');
                 localStorage.setItem('userId', '" . $user['user_id'] . "');

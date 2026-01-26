@@ -13,8 +13,9 @@ session_destroy();
 
 <body>
     <script>
-        // Clear frontend state matching header-footer.js logic
+        // Clear frontend state matching header-footer.js logic (remove both keys)
         localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("loggedIn");
         localStorage.removeItem("userName");
         localStorage.removeItem("userAvatar");
         localStorage.removeItem("userRole");
