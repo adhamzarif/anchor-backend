@@ -209,31 +209,79 @@ async function handleApproval(postId, action) {
 }
 
 async function handleDelete(postId) {
-    if (!confirm('Are you sure you want to delete this fundraiser? This action cannot be undone.')) {
-        return;
-    }
+    showDeleteConfirmation(postId, 'fundraiser');
+}
 
-    try {
-        const response = await fetch('api/api-admin-funding.php', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `post_id=${postId}`
-        });
+function showDeleteConfirmation(id, type) {
+    // Create modal backdrop
+    const modal = document.createElement('div');
+    modal.className = 'delete-modal-overlay';
+    modal.innerHTML = `
+        <div class="delete-modal">
+            <div class="delete-modal-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="delete-modal-title">Delete ${type === 'fundraiser' ? 'Fundraiser' : 'Loan Request'}?</h3>
+            <p class="delete-modal-message">This action cannot be undone. All associated data will be permanently removed.</p>
+            <div class="delete-modal-actions">
+                <button class="delete-modal-btn delete-modal-cancel">Cancel</button>
+                <button class="delete-modal-btn delete-modal-confirm">Delete</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Animate in
+    setTimeout(() => modal.classList.add('active'), 10);
+    
+    // Handle cancel
+    modal.querySelector('.delete-modal-cancel').addEventListener('click', () => {
+        modal.classList.remove('active');
+        setTimeout(() => modal.remove(), 300);
+    });
+    
+    // Handle confirm
+    modal.querySelector('.delete-modal-confirm').addEventListener('click', async () => {
+        modal.querySelector('.delete-modal-confirm').disabled = true;
+        modal.querySelector('.delete-modal-confirm').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+        
+        try {
+            const response = await fetch('api/api-admin-funding.php', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `post_id=${id}`
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        if (data.success) {
-            showNotification('Fundraiser deleted successfully!', 'success');
-            loadFundraisers(); // Reload the list
-        } else {
-            showNotification('Error: ' + (data.error || 'Unknown error occurred'), 'error');
+            if (data.success) {
+                showNotification('Fundraiser deleted successfully!', 'success');
+                modal.classList.remove('active');
+                setTimeout(() => modal.remove(), 300);
+                loadFundraisers(); // Reload the list
+            } else {
+                showNotification('Error: ' + (data.error || 'Unknown error occurred'), 'error');
+                modal.classList.remove('active');
+                setTimeout(() => modal.remove(), 300);
+            }
+        } catch (error) {
+            console.error('Error during deletion:', error);
+            showNotification('An error occurred: ' + error.message, 'error');
+            modal.classList.remove('active');
+            setTimeout(() => modal.remove(), 300);
         }
-    } catch (error) {
-        console.error('Error during deletion:', error);
-        showNotification('An error occurred: ' + error.message, 'error');
-    }
+    });
+    
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            setTimeout(() => modal.remove(), 300);
+        }
+    });
 }
 
 function showNotification(message, type = 'success') {
