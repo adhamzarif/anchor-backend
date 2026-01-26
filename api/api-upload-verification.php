@@ -49,7 +49,7 @@ try {
     }
 
     // Create upload directory if it doesn't exist
-    $upload_dir = 'images/uploads/verification/';
+    $upload_dir = '../images/uploads/verification/';
     if (!is_dir($upload_dir)) {
         mkdir($upload_dir, 0755, true);
     }
@@ -58,6 +58,9 @@ try {
     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
     $filename = 'verification_' . $user_id . '_' . time() . '.' . $extension;
     $filepath = $upload_dir . $filename;
+
+    // Path to store in database (without ../)
+    $db_filepath = 'images/uploads/verification/' . $filename;
 
     // Move uploaded file
     if (!move_uploaded_file($file['tmp_name'], $filepath)) {
@@ -79,27 +82,32 @@ try {
         $updateQuery = "UPDATE verification_documents 
                        SET file_path = :file_path,
                            file_name = :file_name,
-                           uploaded_at = CURRENT_TIMESTAMP,
-                           verified = 0
+                           file_size = :file_size,
+                           mime_type = :mime_type,
+                           uploaded_at = CURRENT_TIMESTAMP
                        WHERE user_id = :user_id";
 
         $stmt = $conn->prepare($updateQuery);
         $stmt->execute([
-            ':file_path' => $filepath,
+            ':file_path' => $db_filepath,
             ':file_name' => $filename,
+            ':file_size' => $file['size'],
+            ':mime_type' => $file_type,
             ':user_id' => $user_id
         ]);
     } else {
         // Insert new document
         $insertQuery = "INSERT INTO verification_documents 
-                       (user_id, file_path, file_name, uploaded_at, verified) 
-                       VALUES (:user_id, :file_path, :file_name, CURRENT_TIMESTAMP, 0)";
+                       (user_id, doc_type, file_path, file_name, file_size, mime_type) 
+                       VALUES (:user_id, 'student_id', :file_path, :file_name, :file_size, :mime_type)";
 
         $stmt = $conn->prepare($insertQuery);
         $stmt->execute([
             ':user_id' => $user_id,
-            ':file_path' => $filepath,
-            ':file_name' => $filename
+            ':file_path' => $db_filepath,
+            ':file_name' => $filename,
+            ':file_size' => $file['size'],
+            ':mime_type' => $file_type
         ]);
     }
 
