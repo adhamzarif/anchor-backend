@@ -38,7 +38,7 @@ if (isset($_POST['login_btn'])) {
             $_SESSION['full_name'] = $user['full_name'];
 
             // 5. Redirect to index page (admin blocked above)
-            $redirect_url = 'index.html';
+            $redirect_url = '../index.html';
 
             echo "<script>
                 localStorage.setItem('isLoggedIn', 'true');

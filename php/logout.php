@@ -5,10 +5,12 @@ session_destroy();
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Logging Out...</title>
 </head>
+
 <body>
     <script>
         // Clear frontend state matching header-footer.js logic
@@ -16,9 +18,10 @@ session_destroy();
         localStorage.removeItem("userName");
         localStorage.removeItem("userAvatar");
         localStorage.removeItem("userRole");
-        
+
         // Redirect
-        window.location.href = "index.html";
+        window.location.href = "../index.html";
     </script>
 </body>
+
 </html>

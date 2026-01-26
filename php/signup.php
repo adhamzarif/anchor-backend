@@ -30,15 +30,16 @@ if (isset($_POST['signup_btn'])) {
 
         if (in_array($ext, $allowed)) {
             $new_filename = uniqid() . "." . $ext;
-            $destination = "images/uploads/users/" . $new_filename;
-            
+            $destination = "../images/uploads/users/" . $new_filename;
+
             // Create directory if not exists
-            if (!file_exists("images/uploads/users/")) {
-                mkdir("images/uploads/users/", 0777, true);
+            if (!file_exists("../images/uploads/users/")) {
+                mkdir("../images/uploads/users/", 0777, true);
             }
 
             if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $destination)) {
-                $profile_image = $destination;
+                // Store path without ../ for database
+                $profile_image = "images/uploads/users/" . $new_filename;
             }
         }
     }
@@ -67,7 +68,6 @@ if (isset($_POST['signup_btn'])) {
         $_SESSION['message'] = "Account created successfully! Please login.";
         header("Location: ../login.html");
         exit();
-
     } catch (PDOException $e) {
         if ($e->getCode() == 23000) {
             // Duplicate entry
@@ -77,4 +77,3 @@ if (isset($_POST['signup_btn'])) {
         }
     }
 }
-?>
