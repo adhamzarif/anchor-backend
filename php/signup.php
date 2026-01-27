@@ -7,14 +7,15 @@ if (isset($_POST['signup_btn'])) {
     $username  = trim($_POST['username']);
     $email     = trim($_POST['email']);
     $password  = $_POST['password'];
-    $phone     = trim($_POST['phone']);
-    $student_id = trim($_POST['student_id']);
-    $university = trim($_POST['university']);
-    $nid_number = trim($_POST['nid_number']);
-    $role      = $_POST['role'];
+    $phone     = isset($_POST['phone']) ? trim($_POST['phone']) : null;
+    $student_id = isset($_POST['student_id']) ? trim($_POST['student_id']) : null;
+    $university = isset($_POST['university']) ? trim($_POST['university']) : null;
+    $nid_number = isset($_POST['nid_number']) ? trim($_POST['nid_number']) : null;
+    // Default role to 'student' for minimal signup form
+    $role      = isset($_POST['role']) && $_POST['role'] !== '' ? $_POST['role'] : 'student';
 
     // Basic Validation
-    if (empty($full_name) || empty($email) || empty($password) || empty($username) || empty($role)) {
+    if (empty($full_name) || empty($email) || empty($password) || empty($username)) {
         echo "Required fields are missing.";
         exit();
     }
